@@ -29,7 +29,6 @@ lambda2 = lambda * N * I;   % Tasa de paquetes generados a nivel de red [paquete
 
 Tsim = 0; % Tiempo actual de la simulación
 Ta = 0; % Tiempo asignado para el siguiente arribo
-nRanura = 0;    % Numero de la ranura actual
 
 
 % - - - - - - - - - - - - - VARIABLES DE CADA GRADO - - - - - - - - - - - - -
@@ -53,20 +52,22 @@ nuevot = -(1/lambda2) * log(1 - U);
 Ta = Tsim + nuevot;
 
 i = I;  % Variable que guarda el Grado actual
+nRanura = 0;    % Numero de la ranura actual
+pktTx = "";     % Paquete transmitido en la ranura Tx
 
-while Tsim < TsimTotal
+while Tsim < 2*Tc
     % * * * * * Generación de Paquete y Siguiente Arribo * * * * * 
     if Ta <= Tsim
         gR = randi([1, I]); % Grado aleatorio al que se le asiganara el paquete
         nR = randi([1, N]); % Nodo aleatorio al que se le asiganara el paquete
         
         pktNuevo = num2str(gR) + ", " + num2str(nR) + ", " + num2str(Ta);   % Generación del paquete
-                
+        
         if isempty(find((bufferNodoPorGrado(gR, nR, :) ~= "") == 0, 1))
             % El paquete se descarta
             pktNuevo = "";
             
-            % Proceso de Conteo de Paquetes Perdidos
+            % >> Proceso de Conteo de Paquetes Perdidos <<
             noPaquetesPerdidosPorGrado(gR) = noPaquetesPerdidosPorGrado(gR) + 1;
         else
             % El paquete se agrega a la cola del buffer
@@ -79,16 +80,50 @@ while Tsim < TsimTotal
         nuevot = -(1/lambda2) * log(1 - U);
         Ta = Tsim + nuevot;
         
+        
     % * * * * * Ciclo de Trabajo del Sistema * * * * * 
     else        
-        % ° ° ° ° Estado de Sleeping del Sistema ° ° ° ° 
-        if nRanura > I + 1  
+        % ° ° ° ° Estado de Sleeping del Sistema ° ° ° °
+        if nRanura >= I + 1  
+            Tsim = Tsim + T;    % Aumento del tiempo de simulación
+            nRanura = nRanura + 1;  % Aumento de la ranura del Ciclo de Trabajo
+            
+            if nRanura >= 20
+               nRanura = 0;
+            end
             
             
         % ° ° ° ° Estado de Transmisión y Recepcion del Sistema ° ° ° °   
         else
             % ' ' ' Proceso de Recepcion del Nodo Sink ' ' '
-            if i == 0   
+            if i == 0
+                if any(pktTx == "")
+                    % Hay un paquete para recibir
+                    payload = strsplit(pktTx, ", ");
+                    pktTx = "";
+                    
+                    gTx = str2double( payload(1) ); % Grado de origen del Paquete
+                    tGenerado = str2double( payload(3) );   % Tiempo en que se Genero el Paquete
+                    
+                    % >> Calculo del retardo del paquete <<
+                    pktDelay = Tsim - tGenerado;    % Calculo del retardo
+                    sig = find(retardoPaquetesPorGrado(gTx,:) == 0, 1); % Buscar espacio libre para guardar Delay
+                    
+                    if isempty(sig)
+                        sig = length(retardoPaquetesPorGrado(gTx,:)) + 1;   % Aumentar el tamaño del array de Retardo
+                    end
+                    
+                    retardoPaquetesPorGrado(gTx, sig) = pktDelay;   % Guardar el retardo en el siguiente espacio libre
+                    
+                    
+                    % >> Proceso de Conteo de Paquetes Recibido <<
+                    noPaquetesRecibidosPorGrado(gTx) = noPaquetesRecibidosPorGrado(gTx) + 1;
+                    
+                end
+                
+                Tsim = Tsim + T;    % Aumento del tiempo de simulación
+                nRanura = nRanura + 1;  % Aumento de la ranura del Ciclo de Trabajo
+                i = I;  % Volver a simular red desde el Grado I
                 
                 
             % ' ' ' Proceso de Recepción y Transmision para cada Grado ' ' '    
@@ -106,7 +141,6 @@ while Tsim < TsimTotal
         end
     end
     
-    Tsim = TsimTotal;
 end
 
 
