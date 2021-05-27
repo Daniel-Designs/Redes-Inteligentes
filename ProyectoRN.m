@@ -45,8 +45,50 @@ retardoPaquetesPorGrado = zeros(I, 1);  % Registro para el retardo de todos los 
 retardoPromedioPorGrado = zeros(1, I);  % Registro del retardo promedio por Grado
 
 
+% - - - - - - - - - - - - - - - - SIMULACIÓN - - - - - - - - - - - - - - - - 
+% Generación del primer arribo
+U = randi([0, 1e6]);
+nuevot = -(1/0.0005)-log(1-U);
+Ta = Tsim + abs(nuevot);
+
+i = I;  % Variable que guarda el Grado actual
+
+while Tsim < TsimTotal
+    % * * * * * Generación de Paquete y Siguiente Arribo * * * * * 
+    if Ta <= Tsim
+        
+        
+    % * * * * * Ciclo de Trabajo del Sistema * * * * * 
+    else        
+        % ° ° ° ° Estado de Sleeping del Sistema ° ° ° ° 
+        if nRanura > I + 1  
+            
+            
+        % ° ° ° ° Estado de Transmisión y Recepcion del Sistema ° ° ° °   
+        else
+            % ' ' ' Proceso de Recepcion del Nodo Sink ' ' '
+            if i == 0   
+                
+                
+            % ' ' ' Proceso de Recepción y Transmision para cada Grado ' ' '    
+            else
+                % ^ ^ Proceso de Recepción ^ ^
+                if estadoGrados(i) == 0
+                    
+                    
+                % ^ ^ Proceso de Transmisión ^ ^
+                else
+                   
+                    
+                end
+            end
+        end
+    end
+    
+    Tsim = TsimTotal;
+end
 
 
-
+% - - - - - - - - - - - - - - - - RESULTADOS - - - - - - - - - - - - - - - - 
 
 
