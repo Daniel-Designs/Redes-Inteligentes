@@ -86,3 +86,22 @@ retardoPromedioPorGrado = zeros(1, I);  % Registro del retardo promedio por Grad
     pos = find(retardoPaquetesPorGrado(2,:) == 0, 1)
     mean1 = mean( retardoPaquetesPorGrado(2,1:pos-1) )
     %Si pos es empty se coloca ":" para el calculo
+
+    
+%% Links utiles
+%{
+
+- String a double
+https://www.mathworks.com/help/matlab/ref/str2double.html
+
+- Hacer split a una string
+https://www.mathworks.com/help/matlab/ref/strsplit.html
+
+- Desplazamiento de matriz
+https://es.mathworks.com/help/matlab/math/reshaping-and-rearranging-arrays.html
+
+- Ampliar Matriz
+https://es.mathworks.com/help/matlab/math/creating-and-concatenating-matrices.html
+
+
+%}
