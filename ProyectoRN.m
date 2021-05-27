@@ -47,16 +47,37 @@ retardoPromedioPorGrado = zeros(1, I);  % Registro del retardo promedio por Grad
 
 % - - - - - - - - - - - - - - - - SIMULACIÓN - - - - - - - - - - - - - - - - 
 % Generación del primer arribo
-U = randi([0, 1e6]);
-nuevot = -(1/0.0005)-log(1-U);
-Ta = Tsim + abs(nuevot);
+%Ta = Tsim + ( -(1/lambda2) * log(1 - 1e6*rand/1e6) );
+U = 1e6*rand/1e6;
+nuevot = -(1/lambda2) * log(1 - U);
+Ta = Tsim + nuevot;
 
 i = I;  % Variable que guarda el Grado actual
 
 while Tsim < TsimTotal
     % * * * * * Generación de Paquete y Siguiente Arribo * * * * * 
     if Ta <= Tsim
+        gR = randi([1, I]); % Grado aleatorio al que se le asiganara el paquete
+        nR = randi([1, N]); % Nodo aleatorio al que se le asiganara el paquete
         
+        pktNuevo = num2str(gR) + ", " + num2str(nR) + ", " + num2str(Ta);   % Generación del paquete
+                
+        if isempty(find((bufferNodoPorGrado(gR, nR, :) ~= "") == 0, 1))
+            % El paquete se descarta
+            pktNuevo = "";
+            
+            % Proceso de Conteo de Paquetes Perdidos
+            noPaquetesPerdidosPorGrado(gR) = noPaquetesPerdidosPorGrado(gR) + 1;
+        else
+            % El paquete se agrega a la cola del buffer
+            p = find(bufferNodoPorGrado(gR, nR, :) == "", 1);
+            bufferNodoPorGrado(gR, nR, p) = pktNuevo;
+        end
+        
+        % Generación de un nuevo arribo
+        U = 1e6*rand/1e6;
+        nuevot = -(1/lambda2) * log(1 - U);
+        Ta = Tsim + nuevot;
         
     % * * * * * Ciclo de Trabajo del Sistema * * * * * 
     else        

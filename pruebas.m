@@ -64,8 +64,15 @@ retardoPromedioPorGrado = zeros(1, I);  % Registro del retardo promedio por Grad
 
 
 % - Determinar si el buffer del nodo en el grado especificado esta vacio [1: Si, 0: No]
-    isempty(find((bufferNodoPorGrado1(2, 5, :) == "") == 0))
-
+    isemp = isempty(find((bufferNodoPorGrado1(2, 5, :) == "") == 0))
+    
+    
+% - Determinar si el buffer del nodo en el grado especificado esta vacio [1: Si, 0: No]
+    for i= 1:K
+        bufferNodoPorGrado(2, 4, i) = "G2 N4 P";
+    end
+    noemp = isempty(find((bufferNodoPorGrado(1, 3, :) ~= "") == 0, 1))
+    
 
 % - Determinar que Nodos de un Grado tienen paquetes por transmitir
     find((bufferNodoPorGrado1(2, :, 1) == "") == 0)
