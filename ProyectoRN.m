@@ -29,8 +29,24 @@ lambda2 = lambda * N * I;   % Tasa de paquetes generados a nivel de red [paquete
 
 Tsim = 0; % Tiempo actual de la simulación
 Ta = 0; % Tiempo asignado para el siguiente arribo
-
 nRanura = 0;    % Numero de la ranura actual
+
+
+% - - - - - - - - - - - - - VARIABLES DE CADA GRADO - - - - - - - - - - - - -
 estadoGrados = zeros(1, I); % Estado que tiene actualmente cada grado en la red - [0: Rx, 1: Tx]
+bufferNodoPorGrado = strings(I, N, K);  % Buffer para cada Nodo por Grado (Grado, Nodo, Tamaño del Buffer)
+
+
+% - - - - - - - - - - - - - VARIABLES PARA ESTADISTICAS - - - - - - - - - - - - -
+noPaquetesPerdidosPorGrado = zeros(1, I);   % Registro para paquetes perdidos por cada Grado
+noPaquetesRecibidosPorGrado = zeros(1, I);  % Registro para paquetes recibidos exitosamente por cada Grado
+
+retardoPaquetesPorGrado = zeros(I, 1);  % Registro para el retardo de todos los paquetes recibidos por cada Grado
+retardoPromedioPorGrado = zeros(1, I);  % Registro del retardo promedio por Grado
+
+
+
+
+
 
 
