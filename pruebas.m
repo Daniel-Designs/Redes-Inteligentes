@@ -95,7 +95,7 @@ retardoPromedioPorGrado = zeros(1, I);  % Registro del retardo promedio por Grad
     %Si pos es empty se coloca ":" para el calculo
 
     
-%% Links utiles
+%%% Links utiles
 %{
 
 - String a double
