@@ -56,12 +56,12 @@ retardoPromedioPorGrado = zeros(1, I);  % Registro del retardo promedio por Grad
 
     bufferNodoPorGrado(2, 5, 1) = "G2 N5 P1";
     bufferNodoPorGrado(2, 5, 2) = "G2 N5 P2";
-
+    
 
     bufferNodoPorGrado1 = bufferNodoPorGrado;
     bufferNodoPorGrado1(2, 5, 1) = "";  % Se borra el paquete en la primera posicion
     bufferNodoPorGrado1(2, 5, :) = circshift(bufferNodoPorGrado1(2, 5, :), [-1]) % Se recorre la cola del buffer
-
+    
 
 % - Determinar si el buffer del nodo en el grado especificado esta vacio [1: Si, 0: No]
     isemp = isempty(find((bufferNodoPorGrado1(2, 5, :) == "") == 0))
