@@ -135,14 +135,14 @@ pktTx = "";     % Paquete transmitido en la ranura Tx
                         if any(pktTx ~= "")
                         %Hay algun pakete para recibir
                             payload = strsplit(pktTx, ", ");
-                            pktTx = "";
+                           
                             
-                            gRx = str2double( payload(1) ) - 1; % Grado de origen del Paquete menos uno
+                            gRx = i; % Grado en que se va a recibir el pakete
                             nTx = str2double( payload(2) ); % Nodo de origen del Paquete
                              
                             if isempty(find((bufferNodoPorGrado(gRx, nTx, :) ~= "") == 0, 1))
                                 % El paquete se descarta
-                                pktTx = "";
+                            
 
                                 % >> Proceso de Conteo de Paquetes Perdidos <<
                                 noPaquetesPerdidosPorGrado(gRx) = noPaquetesPerdidosPorGrado(gRx) + 1;
@@ -154,6 +154,7 @@ pktTx = "";     % Paquete transmitido en la ranura Tx
                                 noPaquetesRecibidosPorGrado(gRx) = noPaquetesRecibidosPorGrado(gRx) + 1;
                                 
                             end
+                           pktTx = "";
                             
                         end
                 
