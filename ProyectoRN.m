@@ -63,17 +63,19 @@ pktTx = "";     % Paquete transmitido en la ranura Tx
             nR = randi([1, N]); % Nodo aleatorio al que se le asiganara el paquete
 
             pktNuevo = num2str(gR) + ", " + num2str(nR) + ", " + num2str(Ta);   % Generación del paquete
-
+            %pktNuevo
             if isempty(find((bufferNodoPorGrado(gR, nR, :) ~= "") == 0, 1))
                 % El paquete se descarta
                 pktNuevo = "";
-
+                disp("Se descarto paquete")
                 % >> Proceso de Conteo de Paquetes Perdidos <<
                 noPaquetesPerdidosPorGrado(gR) = noPaquetesPerdidosPorGrado(gR) + 1;
             else
                 % El paquete se agrega a la cola del buffer
+                %disp("El paquete esta en el buffer");
                 p = find(bufferNodoPorGrado(gR, nR, :) == "", 1);
                 bufferNodoPorGrado(gR, nR, p) = pktNuevo;
+                bufferNodoPorGrado(gR,nR,:);
             end
 
             % Generacion de un nuevo arribo
@@ -131,23 +133,26 @@ pktTx = "";     % Paquete transmitido en la ranura Tx
                 else
                     % ^ ^ Proceso de Recepción ^ ^
                     if estadoGrados(i) == 0
-                       
+                        %disp("Grado: ")
+                        %disp(i)
+                        %disp("Estado Recepcion")
                         if any(pktTx ~= "")
                         %Hay algun pakete para recibir
                             payload = strsplit(pktTx, ", ");
-                           
+                           % disp("Hay un paquete")
                             
                             gRx = i; % Grado en que se va a recibir el pakete
                             nTx = str2double( payload(2) ); % Nodo de origen del Paquete
                              
                             if isempty(find((bufferNodoPorGrado(gRx, nTx, :) ~= "") == 0, 1))
                                 % El paquete se descarta
-                            
+                            %    disp("Estado Recepcion Descarte")
 
                                 % >> Proceso de Conteo de Paquetes Perdidos <<
                                 noPaquetesPerdidosPorGrado(gRx) = noPaquetesPerdidosPorGrado(gRx) + 1;
                             else
                                 % El paquete se agrega a la cola del buffer
+                               % disp("Estado Recepcion Exito")
                                 p = find(bufferNodoPorGrado(gRx, nTx, :) == "", 1);
                                 bufferNodoPorGrado(gRx, nTx, p) = pktTx;
                                  % >> Proceso de Conteo de Paquetes Recibido <<
@@ -165,22 +170,23 @@ pktTx = "";     % Paquete transmitido en la ranura Tx
                    
                     % ^ ^ Proceso de Transmisión ^ ^
                     else
-                        
+                        %disp("Estado Transmision")
                         %Cuantos nodos tienen paquetes para enviar
                         if isempty(find((bufferNodoPorGrado(i,:, 1) == "") == 0)) %no hay paquetes que enviar ------>>>>>  checar
-                            
+                        %disp("No hay paquetes que enviar :c")    
                         else
+                        %disp("Si hay paquetes que enviar ")  
                             %Hay uno o mas paquete para transmitir
                             v =find((bufferNodoPorGrado(i, :, 1) == "") == 0);              %Nodos con paquetes por transmitir
                             sz=size(v);                                                     %Numero de nodos con paquetes por transmitir
                             ranuraContension = zeros(sz);                               
                             
-                            for j= 1:sz
+                            for j= 1:sz(2)
                                 ranuraContension(j) = randi([1, W]);                        %Asignacion de ranura de contension de 1 a W.
                             end
-                            
+                            %ranuraContension
                             bufferSalida = find(ranuraContension == min(ranuraContension)); %Se seleccionan Ganadores
-                            
+                            %bufferSalida
                             if length(bufferSalida) > 1 
                                
                                 % Hay colision
@@ -188,18 +194,19 @@ pktTx = "";     % Paquete transmitido en la ranura Tx
                                     
                                     %Se eliminan los paquetes del buffer que colicionarion
                                     bufferNodoPorGrado(i, bufferSalida(j), 1) = "";                                                        % Se borra el paquete en la primera posicion
-                                    bufferNodoPorGrado(i, bufferSalida(j), :) = circshift(bufferNodoPorGrado(i, bufferSalida(j), :), [-1])    % Se recorre la cola del buffer
+                                    bufferNodoPorGrado(i, bufferSalida(j), :) = circshift(bufferNodoPorGrado(i, bufferSalida(j), :), [-1]);    % Se recorre la cola del buffer
                                     
                                     noPaquetesPerdidosPorGrado(i) = noPaquetesPerdidosPorGrado(i) + 1;                                  %Aumenta el contador de paquetes perdidos por grado
 
                                 end
                                 
                             else
-                            
-                                pktTx = bufferNodoPorGrado(i, bufferSalida, 1);                 %Se asigna el paquete a la variable de salida.
                                 
-                                bufferNodoPorGrado(i, bufferSalida, 1) = "";                    % Se borra el paquete en la primera posicion
-                                bufferNodoPorGrado(i, bufferSalida, :) = circshift(bufferNodoPorGrado(i, bufferSalida, :), [-1]) % Se recorre la cola del buffer
+                                pktTx = bufferNodoPorGrado(i, v(bufferSalida), 1);                 %Se asigna el paquete a la variable de salida.
+                                %pktTx
+                                %disp("Paquete enviado")
+                                bufferNodoPorGrado(i, v(bufferSalida), 1) = "";                    % Se borra el paquete en la primera posicion
+                                bufferNodoPorGrado(i, v(bufferSalida), :) = circshift(bufferNodoPorGrado(i, v(bufferSalida), :), [-1]); % Se recorre la cola del buffer
                                 
                                 
                             end
@@ -219,4 +226,7 @@ pktTx = "";     % Paquete transmitido en la ranura Tx
 
 % - - - - - - - - - - - - - - - - RESULTADOS - - - - - - - - - - - - - - - - 
 
+noPaquetesPerdidosPorGrado
+noPaquetesRecibidosPorGrado
+retardoPaquetesPorGrado
 
