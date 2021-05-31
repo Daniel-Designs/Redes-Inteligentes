@@ -5,7 +5,7 @@ close all
 %Proyecto de redes Neuronales
 
 % - - - - - - - - - - - - - CONDICIONES INICIALES - - - - - - - - - - - - -
-nTc = 100e3; % Numero de ciclos de simulación
+nTc = 10000; % Numero de ciclos de simulación
 
 DIFS = 10;  %[ms]
 SIFS = 5;   %[ms]
@@ -56,7 +56,7 @@ nRanura = 0;    % Numero de la ranura actual
 pktTx = "";     % Paquete transmitido en la ranura Tx
 
     
-while Tsim < 2*Tc
+while Tsim < TsimTotal
     % * * * * * Generacion de Paquete y Siguiente Arribo * * * * * 
     if Ta <= Tsim
         gR = randi([1, I]); % Grado aleatorio al que se le asiganara el paquete
@@ -229,5 +229,42 @@ end
 
 noPaquetesPerdidosPorGrado
 noPaquetesRecibidosPorGrado
-retardoPaquetesPorGrado
+% retardoPaquetesPorGrado
 
+% Paquetes Perdidos
+porcentajePP = zeros(1, I); % Porcentaje de paquetes perdidos
+for c = 1:I
+   porcentajePP(c) = 100*noPaquetesPerdidosPorGrado(c)/(noPaquetesPerdidosPorGrado(c) + noPaquetesRecibidosPorGrado(c));
+end
+
+figure();
+plot(1:I, porcentajePP, 'r', 'linewidth', 2);
+title('Porcentaje de Paquetes Perdidos por Grado');
+xlabel('Grado [i]');
+ylabel('Paquetes Perdidos [%]');
+grid on
+
+
+% Retardo
+meanR = zeros(1, I);    % Retardo promedio por grado
+for c = 1:I
+    mp = find(retardoPaquetesPorGrado(c,:) == 0, 1);
+    
+    if isempty(mp)
+        meanR(c) = mean( retardoPaquetesPorGrado(c,:) );
+    else
+        meanR(c) = mean( retardoPaquetesPorGrado(c, 1:mp-1) );
+    end 
+end
+
+figure();
+plot(1:I, meanR, 'm', 'linewidth', 2);
+title('Retardo Promedio por Grado');
+xlabel('Grado [i]');
+ylabel('Retardo Promedio [ms]');
+grid on
+
+
+% Throughput
+th = sum(noPaquetesRecibidosPorGrado) / nTc;  % Throughput del Sistema
+fprintf('El Throughput del Sistema es %f [pkt/ciclo]\n', th);
